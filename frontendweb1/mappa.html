@@ -80,8 +80,14 @@
 
 			<script>
 				$(document).ready(function() {
-					var ni = 10
-					$("#num_impianti").html(ni);
+					url = "https://raw.githubusercontent.com/mmamei/PCLOUD26/refs/heads/main/frontendweb1/data.json";
+			
+					$.getJSON(url, function(data) {
+						console.log(data);
+						$("#num_impianti").html(data.length);
+
+					});
+					
 				});
 			</script>
 
