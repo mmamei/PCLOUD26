@@ -31,7 +31,7 @@
 				</div>
 				<div class="wrapper">
 						<section  class="container">
-						informaizoni
+						Numero impianti: <span id="num_impianti"></span><br>
 						</section>
 				</div>
 
@@ -77,6 +77,13 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+
+			<script>
+				$(document).ready(function() {
+					var ni = 10
+					$("#num_impianti").html(ni);
+				});
+			</script>
 
 	</body>
 </html>
