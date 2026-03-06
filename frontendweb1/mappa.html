@@ -27,7 +27,7 @@
 						<section id="hero" class="container">
 							<header>
 								<h2>Mappa</h2>
-								<div id="mapid" style="width: 600px; height: 400px;"></div>
+								<div id="mapid" style="width: 1200px; height: 400px; margin: 0 auto;"></div>
 							</header>
 						</section>
 				</div>
@@ -89,12 +89,13 @@
 					$.getJSON(url, function(data) {
 						console.log(data);
 						$("#num_impianti").html(data.length);
-
-						map = L.map('mapid').setView([51.505, -0.09], 13);
+						
+						map = L.map('mapid').setView([data[0]['latitudine'], data[0]['longitudine']], 10);
 						L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
+						data.forEach(function(impianto) {
+							L.marker([impianto['latitudine'], impianto['longitudine']]).addTo(map).bindPopup("<a href='graph.html?id=" + impianto['name'] + "' style='color: black;'>" + impianto['name'] + "</a>");
+						});
 					});
-					
 				});
 			</script>
 
