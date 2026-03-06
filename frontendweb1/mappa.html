@@ -10,6 +10,7 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"/>
 	</head>
 	<body class="homepage is-preload">
 		<div id="page-wrapper">
@@ -26,6 +27,7 @@
 						<section id="hero" class="container">
 							<header>
 								<h2>Mappa</h2>
+								<div id="mapid" style="width: 600px; height: 400px;"></div>
 							</header>
 						</section>
 				</div>
@@ -77,6 +79,8 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+			<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+
 
 			<script>
 				$(document).ready(function() {
@@ -85,6 +89,9 @@
 					$.getJSON(url, function(data) {
 						console.log(data);
 						$("#num_impianti").html(data.length);
+
+						map = L.map('mapid').setView([51.505, -0.09], 13);
+						L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 					});
 					
