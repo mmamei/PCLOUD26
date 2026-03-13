@@ -5,6 +5,10 @@ app = Flask(__name__)
 
 db = {}
 
+@app.route('/', methods=['GET'])
+def main():
+    return 'Hello World', 200
+
 @app.route('/graph', methods=['GET'])
 def graph():
     return redirect(url_for('static', filename='graph.html'))
