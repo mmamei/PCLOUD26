@@ -10,7 +10,6 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
-		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"/>
 	</head>
 	<body class="homepage is-preload">
 		<div id="page-wrapper">
@@ -26,16 +25,23 @@
 					<!-- Hero -->
 						<section id="hero" class="container">
 							<header>
-								<h2>Grafico</h2>
-								<div id="graphid" style="width: 1200px; height: 400px; margin: 0 auto;"></div>
+								<h2>IoT Telemetric Dashboard</h2>
 							</header>
+						<form method="POST" action="/login">
+							<div class="row gapless">
+								<div class="col-12">
+									<input type="text" name="username" placeholder="Username" required />
+								</div>
+								<div class="col-12">
+									<input type="password" name="password" placeholder="Password" required />
+								</div>
+								<div class="col-12">
+									<button type="submit" class="button">Login</button>
+								</div>
+							</div>
+						</form>
+						<br>
 						</section>
-				</div>
-				<div class="wrapper">
-						<section  class="container">
-						Numero impianti: <span id="num_impianti"></span><br>
-						</section>
-				</div>
 
 			
 
@@ -79,49 +85,6 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
-			<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
-			<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
-			<script>
-				$(document).ready(function() {
-					setInterval(function() {
-						window.location.reload();
-					}, 3000);
-
-					url = "/sensors/sensor1";
-			
-					$.getJSON(url, function(data) {
-						console.log(data);
-						$("#num_impianti").html(data.length);
-
-						// Prende la serie del primo impianto e la converte nel formato richiesto da Google Charts.
-						var serieImpianto1 = data;
-						var chartRows = [["Year", "Values"]];
-						serieImpianto1.forEach(function(valore, indice) {
-							chartRows.push([(2013 + indice).toString(), valore[1]]);
-						});
-
-						// codice grafici
-						google.charts.load('current', {'packages':['corechart']});
-						google.charts.setOnLoadCallback(drawChart);
-
-						function drawChart() {
-							var dataTable = google.visualization.arrayToDataTable(chartRows);
-
-							var options = {
-							title: 'Impianto 1 - Serie Temporale',
-							hAxis: {title: 'Year',  titleTextStyle: {color: '#333'}},
-							vAxis: {minValue: 0}
-							};
-
-							var chart = new google.visualization.AreaChart(document.getElementById('graphid'));
-							chart.draw(dataTable, options);
-						}
-
-
-					});
-				});
-			</script>
 
 	</body>
 </html>

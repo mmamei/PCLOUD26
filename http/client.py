@@ -14,10 +14,9 @@ INTERVAL_SECONDS = 3
 with CSV_PATH.open(newline='', encoding='utf-8') as csv_file:
     reader = csv.DictReader(csv_file)
     for row in reader:
-        #response = post(
-        #    f'{BASE_URL}/sensors/{SENSOR_NAME}',
-        #    data={'data': row['datetime'], 'val': row['PM10']},
-        #)
-        response = 'ciao'
+        response = post(
+            f'{BASE_URL}/sensors/{SENSOR_NAME}',
+            data={'data': row['datetime'], 'val': row['PM10']},
+        )
         print(f"{row['datetime']} -> {response.status_code}")
         time.sleep(INTERVAL_SECONDS)

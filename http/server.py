@@ -7,7 +7,11 @@ db = {}
 
 @app.route('/', methods=['GET'])
 def main():
-    return 'Hello World', 200
+    return redirect(url_for('static', filename='index.html'))
+
+@app.route('/login', methods=['POST'])
+def login():
+    return redirect(url_for('static', filename='graph.html'))
 
 @app.route('/graph', methods=['GET'])
 def graph():
