@@ -1,7 +1,23 @@
-from requests import get, post
+import csv
+import time
+from pathlib import Path
 
-base_url = 'http://localhost:80'
+from requests import post
 
-r = post(f'{base_url}/sensors/sensor1', 
-         data={'data':'2026-03-13', 'val': 25.5})
-print(r.status_code)
+
+BASE_URL = 'http://localhost:80'
+CSV_PATH = Path(__file__).with_name('CleanData_PM10.csv')
+SENSOR_NAME = 'sensor1'
+INTERVAL_SECONDS = 3
+
+
+with CSV_PATH.open(newline='', encoding='utf-8') as csv_file:
+    reader = csv.DictReader(csv_file)
+    for row in reader:
+        #response = post(
+        #    f'{BASE_URL}/sensors/{SENSOR_NAME}',
+        #    data={'data': row['datetime'], 'val': row['PM10']},
+        #)
+        response = 'ciao'
+        print(f"{row['datetime']} -> {response.status_code}")
+        time.sleep(INTERVAL_SECONDS)
