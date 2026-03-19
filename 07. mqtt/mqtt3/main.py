@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, redirect, url_for
 from flask_mqtt import Mqtt
 
 app = Flask(__name__)
@@ -31,6 +31,18 @@ def home():
 @app.route('/show')
 def show():
     return str(database)
+
+
+@app.route('/start', methods=['GET'])
+def start():
+    mqtt.publish('control', 'start')
+    return redirect(url_for('home'))
+
+
+@app.route('/stop', methods=['GET'])
+def stop():
+    mqtt.publish('control', 'stop')
+    return redirect(url_for('home'))
 
 # Callback for MQTT message received
 @mqtt.on_message()
