@@ -27,8 +27,7 @@ client_id = "client1"
 
 broker_ip = 'broker.emqx.io'
 broker_port = 1883
-
-default_topic = "/telemetry/1"
+default_topic = "/telemetry/1345"
 
 
 mqtt_client = mqtt.Client(client_id)
