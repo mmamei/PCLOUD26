@@ -1,6 +1,7 @@
 python-telegram-bot
 urllib3
 google-cloud-storage
+google.cloud-firestore
 requests
 flask
 paho-mqtt==1.6.1

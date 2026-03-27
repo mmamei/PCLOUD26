@@ -5,7 +5,7 @@ from pathlib import Path
 from requests import post
 
 
-BASE_URL = 'https://pcloud2026.appspot.com'
+BASE_URL = 'http://localhost:80'
 CSV_PATH = Path(__file__).with_name('CleanData_PM10.csv')
 SENSOR_NAME = 'sensor1'
 INTERVAL_SECONDS = 3
