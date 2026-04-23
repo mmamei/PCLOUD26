@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toggle Button</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #toggleBtn {
+            width: 200px;
+            height: 200px;
+            font-size: 48px;
+            font-weight: bold;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #toggleBtn:hover {
+            transform: scale(1.05);
+        }
+        #toggleBtn:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <div class="button-container">
+        <button id="toggleBtn" class="btn btn-success">Start</button>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let isRunning = false;
+        let sensor = null;
+        let sampleBuffer = [];
+        let uploadTimer = null;
+
+        function toggleButton() {
+            const btn = document.getElementById('toggleBtn');
+
+            if (isRunning) {
+                stopAccelerometer();
+                btn.textContent = 'Start';
+                btn.classList.remove('btn-danger');
+                btn.classList.add('btn-success');
+                isRunning = false;
+                return;
+            }
+
+            const started = startAccelerometer();
+            if (!started) {
+                return;
+            }
+            btn.textContent = 'Stop';
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-danger');
+            isRunning = true;
+        }
+
+        function startAccelerometer() {
+            if (!('LinearAccelerationSensor' in window)) {
+                alert('LinearAccelerationSensor non supportato su questo browser/dispositivo');
+                return false;
+            }
+
+            sampleBuffer = [];
+
+            sensor = new LinearAccelerationSensor({ frequency: 30 });
+
+            sensor.onreading = function() {
+                const magnitude = Math.sqrt(sensor.x * sensor.x + sensor.y * sensor.y + sensor.z * sensor.z);
+                sampleBuffer.push(magnitude);
+            };
+
+            sensor.onerror = function(event) {
+                console.log('Errore sensore:', event.error.name);
+            };
+
+            sensor.start();
+
+            uploadTimer = setInterval(function() {
+                if (!isRunning || sampleBuffer.length === 0) {
+                    sampleBuffer = [];
+                    return;
+                }
+
+                const sum = sampleBuffer.reduce(function(acc, value) {
+                    return acc + value;
+                }, 0);
+                const avgMagnitude = sum / sampleBuffer.length;
+
+                $.post('/accelerometer_data', {
+                    average_magnitude: avgMagnitude,
+                    sample_count: sampleBuffer.length,
+                    ts: Date.now()
+                });
+
+                sampleBuffer = [];
+            }, 1000);
+
+            return true;
+        }
+
+        function stopAccelerometer() {
+            if (uploadTimer) {
+                clearInterval(uploadTimer);
+                uploadTimer = null;
+            }
+
+            if (sensor) {
+                sensor.stop();
+                sensor = null;
+            }
+
+            sampleBuffer = [];
+        }
+
+        document.getElementById('toggleBtn').addEventListener('click', toggleButton);
+    </script>
+</body>
+</html>
