@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Grafico Accelerometro</title>
+	<script src="https://www.gstatic.com/charts/loader.js"></script>
+	<style>
+		:root {
+			--bg1: #eef6f2;
+			--bg2: #d8ece3;
+			--card: #ffffff;
+			--line: #1f8a70;
+			--text: #1c2b24;
+			--muted: #54655d;
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			margin: 0;
+			min-height: 100vh;
+			font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+			color: var(--text);
+			background: radial-gradient(circle at 10% 10%, var(--bg1), var(--bg2));
+			display: grid;
+			place-items: center;
+			padding: 24px;
+		}
+
+		.panel {
+			width: min(1000px, 100%);
+			background: var(--card);
+			border-radius: 16px;
+			padding: 20px;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+		}
+
+		h1 {
+			margin: 0;
+			font-size: 1.4rem;
+		}
+
+		.sub {
+			margin: 8px 0 16px;
+			color: var(--muted);
+			font-size: 0.95rem;
+		}
+
+		#chart_div {
+			width: 100%;
+			height: 420px;
+		}
+
+		.meta {
+			margin-top: 8px;
+			color: var(--muted);
+			font-size: 0.9rem;
+			display: flex;
+			gap: 16px;
+			flex-wrap: wrap;
+		}
+	</style>
+</head>
+<body>
+	<main class="panel">
+		<h1>Accelerometro - Ultimi 60 secondi</h1>
+		<p class="sub">Aggiornamento automatico ogni secondo da endpoint /get_data</p>
+		<div id="chart_div"></div>
+		<div class="meta">
+			<span id="lastUpdate">Ultimo update: -</span>
+			<span id="lastValue">Ultimo valore: -</span>
+		</div>
+	</main>
+
+	<script>
+		google.charts.load('current', { packages: ['corechart'] });
+		google.charts.setOnLoadCallback(init);
+
+		let chart;
+		let options;
+
+		function init() {
+			chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+			options = {
+				title: 'Media modulo accelerometro',
+				legend: { position: 'none' },
+				hAxis: {
+					title: 'Secondi (da -59 a 0)',
+					textStyle: { color: '#33443b' },
+					titleTextStyle: { color: '#33443b' }
+				},
+				vAxis: {
+					title: 'Valore',
+					minValue: 0,
+					textStyle: { color: '#33443b' },
+					titleTextStyle: { color: '#33443b' }
+				},
+				colors: ['#1f8a70'],
+				backgroundColor: 'transparent',
+				chartArea: {
+					left: 60,
+					top: 50,
+					width: '84%',
+					height: '70%'
+				},
+				pointSize: 4,
+				lineWidth: 2
+			};
+
+			updateChart();
+			setInterval(updateChart, 1000);
+		}
+
+		async function updateChart() {
+			try {
+				const response = await fetch('/get_data', { cache: 'no-store' });
+				if (!response.ok) {
+					throw new Error('HTTP ' + response.status);
+				}
+
+				const values = await response.json();
+				draw(values);
+
+				const now = new Date();
+				document.getElementById('lastUpdate').textContent = 'Ultimo update: ' + now.toLocaleTimeString();
+				document.getElementById('lastValue').textContent = 'Ultimo valore: ' + formatLast(values);
+			} catch (err) {
+				console.error('Errore update chart:', err);
+			}
+		}
+
+		function draw(values) {
+			const safeValues = Array.isArray(values) ? values.slice(0, 60) : [];
+			while (safeValues.length < 60) {
+				safeValues.push(0);
+			}
+
+			const data = new google.visualization.DataTable();
+			data.addColumn('number', 'Secondo');
+			data.addColumn('number', 'Valore');
+
+			const rows = [];
+			for (let i = 0; i < 60; i += 1) {
+				rows.push([i - 59, Number(safeValues[i])]);
+			}
+
+			data.addRows(rows);
+			chart.draw(data, options);
+		}
+
+		function formatLast(values) {
+			if (!Array.isArray(values) || values.length === 0) {
+				return '-';
+			}
+			const v = Number(values[values.length - 1]);
+			if (Number.isNaN(v)) {
+				return '-';
+			}
+			return v.toFixed(3);
+		}
+	</script>
+</body>
+</html>

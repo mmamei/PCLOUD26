@@ -17,6 +17,12 @@ db = firestore.Client.from_service_account_json('secret.json', database=db)
 def main():
     return redirect(url_for('static', filename='app.html'))
 
+
+@app.route('/graph',methods=['GET'])
+def graph():
+    return redirect(url_for('static', filename='graph.html'))
+
+
 @app.route('/upload_data_buffer',methods=['POST'])
 def upload_data_buffer():
     #print(request.form)
