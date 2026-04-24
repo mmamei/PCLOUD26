@@ -4,21 +4,79 @@ import os
 from datetime import datetime
 import json
 from google.cloud import firestore
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 # requires pyopenssl
 # pip install pyopenssl
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'pcloud2026-secret-key'
+
 db = 'app-accel'
 db = firestore.Client.from_service_account_json('secret.json', database=db)
 
-@app.route('/',methods=['GET'])
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+
+
+class User(UserMixin):
+    def __init__(self, username):
+        self.id = username
+        self.username = username
+
+
+@login_manager.user_loader
+def load_user(username):
+    doc = db.collection('users').document(username).get()
+    if doc.exists:
+        return User(username)
+    return None
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return redirect(url_for('static', filename='login.html'))
+    username = request.form.get('username', '').strip()
+    password = request.form.get('password', '')
+    next_page = request.form.get('next') or '/'
+    doc = db.collection('users').document(username).get()
+    if doc.exists and check_password_hash(doc.to_dict()['password'], password):
+        login_user(User(username))
+        return redirect(next_page)
+    return redirect(url_for('login') + '?error=1&next=' + next_page)
+
+
+@app.route('/register', methods=['POST'])
+def register():
+    username = request.form.get('username', '').strip()
+    password = request.form.get('password', '')
+    if not username or not password:
+        return redirect(url_for('login') + '?error=empty')
+    user_ref = db.collection('users').document(username)
+    if user_ref.get().exists:
+        return redirect(url_for('login') + '?error=exists')
+    user_ref.set({'password': generate_password_hash(password)})
+    login_user(User(username))
+    return redirect('/')
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+
+@app.route('/', methods=['GET'])
+@login_required
 def main():
     return redirect(url_for('static', filename='app.html'))
 
 
-@app.route('/graph',methods=['GET'])
+@app.route('/graph', methods=['GET'])
+@login_required
 def graph():
     return redirect(url_for('static', filename='graph.html'))
 
@@ -39,6 +97,7 @@ def upload_data():
 
 
 @app.route('/accelerometer_data', methods=['POST'])
+@login_required
 def accelerometer_data():
     avg_magnitude = request.values.get('average_magnitude')
     sample_count = request.values.get('sample_count')
@@ -46,7 +105,7 @@ def accelerometer_data():
 
     print('accelerometer_data:', avg_magnitude, sample_count, timestamp_ms)
 
-    coll = 'accelerometer-readings'
+    coll = current_user.username
     doc_id = f"acc-{timestamp_ms}" if timestamp_ms else None
     payload = {
         'avg_magnitude': float(avg_magnitude) if avg_magnitude is not None else None,
@@ -68,8 +127,9 @@ def accelerometer_data():
 
 
 @app.route('/get_data', methods=['GET'])
+@login_required
 def get_data():
-    coll = 'accelerometer-readings'
+    coll = current_user.username
 
     now_ms = int(datetime.utcnow().timestamp() * 1000)
     end_sec = now_ms // 1000

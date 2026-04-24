@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: #f0f0f0; }
+        .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); width: 320px; }
+        h2 { margin-top: 0; text-align: center; }
+        input[type=text], input[type=password] { width: 100%; padding: 0.5rem; margin: 0.4rem 0 0.8rem; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { width: 100%; padding: 0.6rem; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
+        button:hover { background: #0056b3; }
+        .toggle { text-align: center; margin-top: 1rem; font-size: 0.9rem; }
+        .toggle a { color: #007bff; cursor: pointer; text-decoration: underline; }
+        .error { color: red; text-align: center; margin-bottom: 0.8rem; font-size: 0.9rem; }
+        .success { color: green; text-align: center; margin-bottom: 0.8rem; font-size: 0.9rem; }
+        #register-form { display: none; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div id="error-msg" class="error" style="display:none"></div>
+
+    <!-- Login form -->
+    <div id="login-form">
+        <h2>Login</h2>
+        <form action="/login" method="post">
+            <input type="hidden" name="next" id="login-next">
+            <label>Username</label>
+            <input type="text" name="username" required autofocus>
+            <label>Password</label>
+            <input type="password" name="password" required>
+            <button type="submit">Accedi</button>
+        </form>
+        <div class="toggle">Non hai un account? <a onclick="showRegister()">Registrati</a></div>
+    </div>
+
+    <!-- Register form -->
+    <div id="register-form">
+        <h2>Registrazione</h2>
+        <form action="/register" method="post">
+            <label>Username</label>
+            <input type="text" name="username" required>
+            <label>Password</label>
+            <input type="password" name="password" required>
+            <button type="submit">Registrati</button>
+        </form>
+        <div class="toggle">Hai già un account? <a onclick="showLogin()">Accedi</a></div>
+    </div>
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById('login-next').value = params.get('next') || '/';
+
+    const error = params.get('error');
+    const errorEl = document.getElementById('error-msg');
+    if (error === '1') {
+        errorEl.textContent = 'Username o password errati.';
+        errorEl.style.display = 'block';
+    } else if (error === 'exists') {
+        errorEl.textContent = 'Username già in uso.';
+        errorEl.style.display = 'block';
+        showRegister();
+    } else if (error === 'empty') {
+        errorEl.textContent = 'Username e password sono obbligatori.';
+        errorEl.style.display = 'block';
+        showRegister();
+    }
+
+    function showRegister() {
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('register-form').style.display = 'block';
+    }
+    function showLogin() {
+        document.getElementById('register-form').style.display = 'none';
+        document.getElementById('login-form').style.display = 'block';
+    }
+</script>
+</body>
+</html>
