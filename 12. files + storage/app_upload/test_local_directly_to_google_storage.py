@@ -1,7 +1,9 @@
 from google.cloud import storage
-client = storage.Client.from_service_account_json('secret.json')
-#bucket = client.create_bucket('upload-mamei-11')
-bucket = client.bucket('pcloud2026-2')
+import os
+
+cred_file = 'credentials.json' if os.path.exists('credentials.json') else 'secret.json'
+client = storage.Client.from_service_account_json(cred_file)
+bucket = client.bucket(os.environ.get('GCS_BUCKET', 'pcloud2026-2'))
 source_file_name = 'test.jpg'
 destination_blob_name = source_file_name
 blob = bucket.blob(destination_blob_name)

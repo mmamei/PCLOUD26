@@ -25,7 +25,7 @@ def upload():
             return redirect(request.url)
         fname = secure_filename(file.filename) # opzionale
         print(fname)
-        file.save(os.path.join('files',fname))    
+        file.save(os.path.join('files',fname))
         return 'saved '+fname
 
 
