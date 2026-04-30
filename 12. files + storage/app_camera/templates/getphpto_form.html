@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ricerca Foto per Intervallo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      line-height: 1.4;
+    }
+    form {
+      max-width: 420px;
+      display: grid;
+      gap: 0.8rem;
+    }
+    label {
+      font-weight: 600;
+    }
+    input, button {
+      font-size: 1rem;
+      padding: 0.5rem;
+    }
+    .error {
+      color: #b00020;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <h1>Ricerca Foto (Firestore + Storage)</h1>
+
+  {% if error %}
+    <p class="error">{{ error }}</p>
+  {% endif %}
+
+  <form method="post" action="{{ url_for('getphpto') }}">
+    <label for="start_date">Data inizio</label>
+    <input id="start_date" name="start_date" type="date" required>
+
+    <label for="end_date">Data fine</label>
+    <input id="end_date" name="end_date" type="date" required>
+
+    <button type="submit">Cerca foto</button>
+  </form>
+</body>
+</html>
