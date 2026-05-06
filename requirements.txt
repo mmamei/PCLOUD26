@@ -7,3 +7,9 @@ flask
 paho-mqtt==1.6.1
 flask-mqtt
 flask-login
+pandas
+google-cloud-bigquery
+google-cloud-bigquery-storage   
+db-dtypes
+matplotlib
+folium
