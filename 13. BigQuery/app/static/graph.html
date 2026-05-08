@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+<!--
+	Telephasic by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Telephasic by HTML5 UP</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"/>
+	</head>
+	<body class="homepage is-preload">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+				<div id="header-wrapper">
+					<div id="header" class="container">
+
+						<!-- Logo -->
+							<h1 id="logo"><a href="index.html">Telephasic</a></h1>
+					</div>
+
+					<!-- Hero -->
+						<section id="hero" class="container">
+							<header>
+								<h2>Grafico</h2>
+								<div id="graphid" style="width: 1200px; height: 400px; margin: 0 auto;"></div>
+							</header>
+						</section>
+				</div>
+				<div class="wrapper">
+						<section  class="container">
+						Numero impianti: <span id="num_impianti"></span><br>
+						</section>
+				</div>
+
+			
+
+			<!-- Footer -->
+				<div id="footer-wrapper">
+					<div id="footer" class="container">
+						
+						<div class="row">
+							<section class="col-12">
+								<h3>Contact Info</h3>
+								<p>Get in touch with us for more information about our IoT Telemetric Dashboard services.</p>
+							</section>
+						</div>
+						<div class="row">
+							<section class="col-12">
+								<ul class="divided icons" style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;">
+									<br>
+									<li class="icon brands fa-twitter"><a href="#"><span class="extra">twitter.com</span></a></li>
+									<li class="icon brands fa-facebook-f"><a href="#"><span class="extra">facebook.com</span></a></li>
+									<li class="icon brands fa-dribbble"><a href="#"><span class="extra">dribbble.com</span></a></li>
+									<li class="icon brands fa-instagram"><a href="#"><span class="extra">instagram.com</span></a></li>
+									<li class="icon brands fa-youtube"><a href="#"><span class="extra">youtube.com</span></a></li>
+									<li class="icon brands fa-pinterest"><a href="#"><span class="extra">pinterest.com</span></a></li>
+								</ul>
+							</section>
+						</div>
+					</div>
+					<div id="copyright" class="container">
+						<ul class="menu">
+							<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						</ul>
+					</div>
+				</div>
+
+		</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.dropotron.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+			<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+			<script>
+				$(document).ready(function() {
+					setInterval(function() {
+						window.location.reload();
+					}, 3000);
+
+					url = "/sensors/sensor1";
+			
+					$.getJSON(url, function(data) {
+						console.log(data);
+						$("#num_impianti").html(data.length);
+
+						// Prende la serie del primo impianto e la converte nel formato richiesto da Google Charts.
+						var serieImpianto1 = data;
+						var chartRows = [["Year", "Values"]];
+						serieImpianto1.forEach(function(valore, indice) {
+							chartRows.push([(2013 + indice).toString(), valore[1]]);
+						});
+
+						// codice grafici
+						google.charts.load('current', {'packages':['corechart']});
+						google.charts.setOnLoadCallback(drawChart);
+
+						function drawChart() {
+							var dataTable = google.visualization.arrayToDataTable(chartRows);
+
+							var options = {
+							title: 'Impianto 1 - Serie Temporale',
+							hAxis: {title: 'Year',  titleTextStyle: {color: '#333'}},
+							vAxis: {minValue: 0}
+							};
+
+							var chart = new google.visualization.AreaChart(document.getElementById('graphid'));
+							chart.draw(dataTable, options);
+						}
+
+
+					});
+				});
+			</script>
+
+	</body>
+</html>
