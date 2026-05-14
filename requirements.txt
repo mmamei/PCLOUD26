@@ -15,5 +15,7 @@ db-dtypes
 pandas
 matplotlib
 folium
+numpy
+scikit-learn
 
 google-cloud-pubsub

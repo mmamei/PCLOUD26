@@ -1,6 +1,6 @@
 from requests import post
 
-r = post('https://europe-west8-plcoud2024.cloudfunctions.net/hello_http',json={'username':'matteo'})
+r = post('https://europe-west8-pcloud2026.cloudfunctions.net/hello_http',json={'name':'matteo'})
 print(r.status_code)
 print(r.text)
 

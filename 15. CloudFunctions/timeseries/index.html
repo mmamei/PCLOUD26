@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predict PM10</title>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      line-height: 1.4;
+    }
+
+    button {
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+    }
+
+    pre {
+      background: #f5f5f5;
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>Chiamata HTTP a Cloud Function</h1>
+  <p>Questa pagina invia la stessa richiesta del file Python.</p>
+
+  <button id="sendRequest">Invia richiesta</button>
+
+  <h2>Risultato</h2>
+  <pre id="result">Nessuna richiesta eseguita.</pre>
+
+  <script>
+    const url = "https://europe-west8-pcloud2026.cloudfunctions.net/predict_PM10";
+    const data = {
+      "PM10-1": 465,
+      "PM10-2": 45,
+      "PM10-3": 34,
+      "weekend01": 0
+    };
+
+    $("#sendRequest").on("click", function () {
+      $("#result").text("Invio richiesta in corso...");
+
+      $.post(url,{'data':JSON.stringify(data)},
+                function(output,status){
+                    console.log(data)
+                    $("#result").text(JSON.stringify(output, null, 2));
+               })
+        
+      });
+  </script>
+</body>
+</html>
