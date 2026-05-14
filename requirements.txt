@@ -15,3 +15,5 @@ db-dtypes
 pandas
 matplotlib
 folium
+
+google-cloud-pubsub
