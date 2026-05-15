@@ -1,5 +1,6 @@
-def hello_http(request):
+def save_data(request):
     from google.cloud import firestore
+    from datetime import datetime
     import json
     if request.method == 'OPTIONS':
         print('------ options')
@@ -15,6 +16,9 @@ def hello_http(request):
         return ('', 204, headers)
 
     request_json = json.loads(request.values['data'])
+    request_json['datetime'] = datetime.strptime(request_json['datetime'], '%Y-%m-%d %H:%M:%S')
+    request_json['pm10'] = float(request_json['PM10'])
+    del request_json['PM10']
     #request_json = request.data.decode('utf-8')
     print('>>>>>>>>>>>>>>>>>>>>>>>')
     print(request_json)
@@ -22,7 +26,12 @@ def hello_http(request):
     headers = {
         'Access-Control-Allow-Origin': '*'
     }
-    # request_json = {'time':'20-5-2022 14:39:31','value':[45,45]}
-    db = firestore.Client()
-    db.collection('sensor').document(request_json['time']).set(request_json)
+    # request_json = {'datetime': '2020-01-15 00:00:00', 'PM10': '71.0'}
+    db = firestore.Client(database='test1')
+    
+    # converti in stringa request_json['datetime']
+    sdatetime = request_json['datetime'].strftime('%Y-%m-%d %H:%M:%S')
+    db.collection('pm10').document(sdatetime).set(request_json)
     return ('ok', 200, headers)
+
+    
