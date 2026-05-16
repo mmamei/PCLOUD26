@@ -1,4 +1,4 @@
-def save_data(request):
+def query_data(request):
     from google.cloud import firestore
     import json
     if request.method == 'OPTIONS':
