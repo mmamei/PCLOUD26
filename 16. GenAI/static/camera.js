@@ -15,7 +15,8 @@ function gotMedia(mediaStream) {
     imageCapture.takePhoto().then(blob => {
     img = document.getElementById("img")
     img.src = URL.createObjectURL(blob);
-    $("#counter").html(count)
+    
+    //$("#counter").html(count)
 
     if(ready_to_send) {
             ready_to_send = false
@@ -27,6 +28,12 @@ function gotMedia(mediaStream) {
                 data: fd,
                 processData: false,
                 contentType: false,
+              cache: false,
+              headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+              },
             }).done(function(data) {
                 data = JSON.parse(data)
                 file = data[0]
@@ -34,10 +41,10 @@ function gotMedia(mediaStream) {
                 console.log(data);
                 $('#txt').html(data)
                 var audio = new Audio();
-                audio.src = file
+              audio.src = file + (file.includes('?') ? '&' : '?') + 't=' + new Date().getTime()
                 audio.play()
                 audio.addEventListener("ended", function(){
-                    myAudio.currentTime = 0;
+                    //myAudio.currentTime = 0;
                     console.log("ended");
                     ready_to_send = true
                 });

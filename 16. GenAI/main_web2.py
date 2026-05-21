@@ -6,7 +6,7 @@ import os
 import vertexai
 from vertexai.generative_models import GenerativeModel, Part
 from google.cloud import texttospeech, storage
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="credentials.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="secret.json"
 app = Flask(__name__)
 import json
 @app.route("/", methods=['POST', 'GET'])
@@ -20,23 +20,23 @@ cont = 0
 def upload():
     global cont
     cont += 1
-    storage_client = storage.Client.from_service_account_json('credentials.json')
+    storage_client = storage.Client.from_service_account_json('secret.json')
     # check if the post request has the file part
     file = request.files['file']
-    bucket = storage_client.bucket('pcloud2024-1')
+    bucket = storage_client.bucket('pcloud2026-1')
     blob = bucket.blob(f'test5.jpg')
     blob.upload_from_string(file.read(), content_type=file.content_type)
 
-    vertexai.init(project='plcoud2024', location="europe-west8")
-    model = GenerativeModel(model_name="gemini-1.0-pro-vision-001")
+    vertexai.init(project='pcloud2026', location="europe-west8")
+    model = GenerativeModel(model_name="gemini-2.5-flash")
     response = model.generate_content(
         [
             # Part.from_image(Image.load_from_file("image.jpg"))
             Part.from_uri(
-                "gs://pcloud2024-1/test5.jpg",
+                "gs://pcloud2026-1/test5.jpg",
                 mime_type="image/jpeg",
             ),
-            "Descrivi cosa è rappresentato nell'immagine, iniziando con: Vedo..",
+            "Descrivi cosa è rappresentato nell'immagine in massimo 10 parole, iniziando con: Vedo..",
         ]
     )
 
@@ -51,12 +51,11 @@ def upload():
     response = client.synthesize_speech(
         input=synthesis_input, voice=voice, audio_config=audio_config
     )
-    file = f'output{cont}.mp3'
 
     # The response's audio_content is binary.
-    with open(f'static/{file}', 'wb') as out:
+    with open('16. GenAI/static/output.mp3', 'wb') as out:
         out.write(response.audio_content)
-    return json.dumps([file,txt])
+    return json.dumps(['output.mp3',txt])
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=222, debug=True, ssl_context='adhoc')

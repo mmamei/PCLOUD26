@@ -4,7 +4,7 @@ from flask import request
 from flask import send_file
 import os
 from google.cloud import texttospeech
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="credentials.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="secret.json"
 app = Flask(__name__)
 
 @app.route("/", methods=['POST', 'GET'])
@@ -21,10 +21,10 @@ def index():
     )
 
     # The response's audio_content is binary.
-    with open('static/output.mp3', 'wb') as out:
+    with open('16. GenAI/static/output.mp3', 'wb') as out:
         out.write(response.audio_content)
-    return redirect(url_for('static', filename='output.mp3'))
+    return redirect('static/output.mp3')
     #return send_file("static/output.mp3",as_attachment=True)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
