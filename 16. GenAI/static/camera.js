@@ -24,7 +24,7 @@ function gotMedia(mediaStream) {
             fd.append('file', blob, 'screenshot.png');
             $.ajax({
                 type: 'POST',
-                url: '/upload?time='+new Date().getTime(),
+                url: '/upload?time='+new Date().getTime(), // to avoid caching
                 data: fd,
                 processData: false,
                 contentType: false,
@@ -41,7 +41,7 @@ function gotMedia(mediaStream) {
                 console.log(data);
                 $('#txt').html(data)
                 var audio = new Audio();
-              audio.src = file + (file.includes('?') ? '&' : '?') + 't=' + new Date().getTime()
+              audio.src = file + (file.includes('?') ? '&' : '?') + 't=' + new Date().getTime()  // to avoid caching    
                 audio.play()
                 audio.addEventListener("ended", function(){
                     //myAudio.currentTime = 0;
