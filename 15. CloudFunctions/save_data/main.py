@@ -32,6 +32,23 @@ def save_data(request):
     # converti in stringa request_json['datetime']
     sdatetime = request_json['datetime'].strftime('%Y-%m-%d %H:%M:%S')
     db.collection('pm10').document(sdatetime).set(request_json)
+
+    # leggi da firestore database test1 collection training il documento con id last_train e prendi il campo last_train
+    doc_ref = db.collection('training').document('last_train')
+    doc = doc_ref.get()
+    if doc.exists:
+        last_train = doc.to_dict()['last_train']
+        print(f"Last train: {last_train}")
+    else:
+        print("No such document!")
+    
+     # se request_json['datetime'] è maggiore di last_train di almeno 7 giorni, chiama la funzione di training
+     # con la libreria requests, url della funzione di training è https://europe-west8-pcloud2026.cloudfunctions.net/train_model, metodo POST
+
+    if (request_json['datetime'] - datetime.strptime(last_train, '%Y-%m-%d %H:%M:%S')).days >= 7:
+        import requests
+        r = requests.post('https://europe-west8-pcloud2026.cloudfunctions.net/train_model')
+        print(f"Train model response: {r.status_code} - {r.text}")  
     return ('ok', 200, headers)
 
     
